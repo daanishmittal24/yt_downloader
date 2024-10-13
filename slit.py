@@ -4,12 +4,18 @@ import moviepy.editor as mp
 import os
 import zipfile
 import re
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+from email.mime.text import MIMEText
 
 st.title("Video Audio Downloader and Merger")
 
 search_query = st.text_input("Enter video search query:", "Tseries Music")
 num_videos = st.slider("Number of videos to download:", min_value=1, max_value=10, value=3)
 trim_seconds = st.slider("Seconds to trim from start of each video:", min_value=0, max_value=60, value=5)
+email_address = st.text_input("Enter your email address:")
 
 output_folder = "videos"
 audio_folder = "audio"
@@ -79,6 +85,36 @@ def delete_files():
     
     st.success("Video and individual audio files have been deleted.")
 
+def send_email(recipient_email):
+    """Send the merged audio file to the specified email."""
+    sender_email = "mrolaf2403@gmail.com"  # Your email address
+    sender_password = "271172"  # Your email password
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = "Your Merged Audio File"
+    
+    body = "Please find the attached merged audio file."
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Attach the audio file
+    with open(merged_audio_path, "rb") as attachment:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header(
+            "Content-Disposition",
+            f"attachment; filename= {os.path.basename(merged_audio_path)}",
+        )
+        msg.attach(part)
+
+    # Sending the email
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()  # Secure the connection
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+
 if st.button("Download and Process"):
     with st.spinner("Downloading videos..."):
         download_videos(search_query, num_videos)
@@ -94,6 +130,14 @@ if st.button("Download and Process"):
     with open(merged_audio_path, "rb") as audio_file:
         st.download_button(label="Download Merged Audio", data=audio_file, file_name="merged_audio.wav", mime="audio/wav")
     
+    if email_address:
+        with st.spinner("Sending email..."):
+            send_email(email_address)
+            st.success(f"Merged audio sent to {email_address}.")
+    
     delete_files()
 
-st.markdown("""<br><br><h5 style='text-align: center;'>Made with ❤️ by <a href='https://github.com/daanishmittal24' target='_blank'> Daanish Mittal<br></a></h5>""", unsafe_allow_html=True)
+st.markdown("""
+    <br><br>
+    <h5 style='text-align: center;'>Made with ❤️ by <a href='https://github.com/daanishmittal24' target='_blank'> Daanish Mittal<br></a></h5>
+""", unsafe_allow_html=True)
