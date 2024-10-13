@@ -1,8 +1,13 @@
 
 # Video Audio Downloader and Merger
+## Deployed Application
+You can access the deployed application at: [Video Audio Downloader and Merger](https://youtube-downloader-merge.streamlit.app)
 
 ## Description
 This application allows users to search for videos on YouTube, download a specified number of videos, trim the audio from the beginning, and merge the audio into a single file.
+
+![image](https://github.com/user-attachments/assets/e912b4f0-0b05-4acd-bbaf-d12047d0056f)
+
 
 ## Features
 - Search for videos on YouTube based on a query.
@@ -36,8 +41,6 @@ This application allows users to search for videos on YouTube, download a specif
 4. Click on **Download and Process** to start downloading and processing.
 5. Listen to the merged audio and download it if desired.
 
-## Deployed Application
-You can access the deployed application at: [Video Audio Downloader and Merger](https://youtube-downloader-merge.streamlit.app)
 
 ## License
 This project is open-source and available for modification and redistribution.
