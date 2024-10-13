@@ -1,5 +1,5 @@
 
-# Video Audio Downloader and Merger
+# Audio Downloader and Merger
 ## Deployed Application
 You can access the deployed application at: [Video Audio Downloader and Merger](https://youtube-downloader-merge.streamlit.app)
 
