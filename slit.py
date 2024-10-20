@@ -19,15 +19,14 @@ email_address = st.text_input("Enter your email address:")
 
 output_folder = "videos"
 audio_folder = "audio"
-merged_audio_path = os.path.join(audio_folder, "merged_audio.wav")
+merged_audio_path = os.path.join(audio_folder, "merged_audio.mp3")  # Change extension to mp3
 zip_file_path = os.path.join(audio_folder, "merged_audio.zip")
 
 os.makedirs(output_folder, exist_ok=True)
 os.makedirs(audio_folder, exist_ok=True)
 
 def sanitize_filename(filename):
-    """Sanitize the filename to remove invalid characters."""
-    sanitized = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '', filename)  # Remove special characters and control chars
+    sanitized = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '', filename)
     return sanitized
 
 def download_videos(search_query, num_videos):
@@ -64,7 +63,9 @@ def process_audio(trim_seconds):
 def merge_audio(audio_clips):
     if audio_clips:
         merged_audio = mp.concatenate_audioclips(audio_clips)
-        merged_audio.write_audiofile(merged_audio_path)
+        
+        # Write the merged audio file in MP3 format with a lower bitrate
+        merged_audio.write_audiofile(merged_audio_path, codec='mp3', bitrate='64k')
         
         with zipfile.ZipFile(zip_file_path, 'w') as zipf:
             zipf.write(merged_audio_path, os.path.basename(merged_audio_path))
@@ -78,7 +79,7 @@ def delete_files():
         video_path = os.path.join(output_folder, video_file)
         os.remove(video_path) 
     
-    audio_files = [f for f in os.listdir(audio_folder) if f.endswith('.wav') and f != 'merged_audio.wav']
+    audio_files = [f for f in os.listdir(audio_folder) if f.endswith('.wav') and f != 'merged_audio.mp3']
     for audio_file in audio_files:
         audio_path = os.path.join(audio_folder, audio_file)
         os.remove(audio_path)  
@@ -86,9 +87,8 @@ def delete_files():
     st.success("Video and individual audio files have been deleted.")
 
 def send_email(recipient_email):
-    """Send the merged audio file to the specified email."""
-    sender_email = "mrolaf2403@gmail.com"  # Your email address
-    sender_password = "271172"  # Your email password
+    sender_email = "mrolaf2403@gmail.com"
+    sender_password = "agfm yhmb pzcm dpqk"
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -111,7 +111,7 @@ def send_email(recipient_email):
 
     # Sending the email
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()  # Secure the connection
+        server.starttls()  
         server.login(sender_email, sender_password)
         server.send_message(msg)
 
@@ -128,7 +128,7 @@ if st.button("Download and Process"):
     st.audio(merged_audio_path)
 
     with open(merged_audio_path, "rb") as audio_file:
-        st.download_button(label="Download Merged Audio", data=audio_file, file_name="merged_audio.wav", mime="audio/wav")
+        st.download_button(label="Download Merged Audio", data=audio_file, file_name="merged_audio.mp3", mime="audio/mpeg")
     
     if email_address:
         with st.spinner("Sending email..."):
